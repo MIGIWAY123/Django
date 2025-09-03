@@ -11,7 +11,10 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 import os
+from dotenv import load_dotenv
 from pathlib import Path
+
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -21,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-#w^e8x@21q_f6_9)sn_9$dm3$_c&%ky%!##7$zws&**y4fhn5r'
+SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -147,8 +150,8 @@ CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-STRIPE_PUBLIC_KEY = 'pk_test_51PZxPwRuUGbz0PCF9ex8sebIbjK4SepL2aBrFkRgn51uohQWwUTVOufdO7a8gddRUD22Vn7LlxyHDHD5XmioLozh00X5shh1LS'
-STRIPE_SECRET_KEY = 'sk_test_51PZxPwRuUGbz0PCFtjcSzwx0sydiJfUQ8uFDaFvF5tir6f79154gjQ4Q64yLlnhmyrOwcjKex9EM2oZtIH6xflbA00Jg48a8B3'
+STRIPE_PUBLIC_KEY = os.getenv('STRIPE_PUBLIC_KEY')
+STRIPE_SECRET_KEY = os.getenv('STRIPE_SECRET_KEY')
 
 UNFOLD = {
     'COLORS': {
