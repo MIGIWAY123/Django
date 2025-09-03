@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+    Оплата прошла успешно!
+{% endblock title %}
+
+{% block content %}
+    <section class="checkout shop" style="text-align: center; padding: 50px 0;">
+        <div class="container">
+            <h3 class="section-title-na">Оплата прошла успешно!</h3>
+            <p class="section-desc">
+                Благодарим вас за покупку. Ваш заказ успешно оформлен и будет обработан в ближайшее время.
+            </p>
+            <p class="section-sub-desc">
+                Вам на почту было отправлено подтверждение заказа.
+            </p>
+            <div style="margin-top: 30px;">
+                <a href="{% url 'index_path' %}" class="btn btn-primary" style="font-size: 25px">Вернуться на главную</a>
+            </div>
+        </div>
+    </section>
+{% endblock content %}

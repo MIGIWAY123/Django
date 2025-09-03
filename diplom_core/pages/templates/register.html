@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+    Feng Shui: Регистрация
+{% endblock title %}
+
+{% block content %}
+    <main>
+        <div class="container">
+            <form  method="post" action="{% url 'register_path' %}" class="form-wrapper">
+                <h2>Signup</h2>
+                {% csrf_token %}
+
+                {# Вывод общих ошибок формы #}
+                {% if form.non_field_errors %}
+                    <div class="error-list">
+                        {% for error in form.non_field_errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                <div class="form-field">
+                    {{ form.username }}
+                    {# Вывод ошибок для конкретного поля #}
+                    {% if form.username.errors %}
+                        <div class="error-list">
+                            {% for error in form.username.errors %}
+                                <p>{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="form-field">
+                    {{ form.password1 }}
+                    {% if form.password1.errors %}
+                        <div class="error-list">
+                            {% for error in form.password1.errors %}
+                                <p>{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="form-field">
+                    {{ form.password2 }}
+                    {% if form.password2.errors %}
+                        <div class="error-list">
+                            {% for error in form.password2.errors %}
+                                <p>{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <button type="submit">Sign Up</button>
+            </form>
+        </div>
+    </main>
+{% endblock content %}

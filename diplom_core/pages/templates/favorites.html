@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+    Feng Shui: Избранное
+{% endblock title %}
+
+{% block content %}
+    <main>
+        <section class="favorites shop">
+            <div class="container">
+                <h3 class="section-title-na">Favorites</h3>
+                <div class="favorites-list">
+                    {% for favorite in favorites %}
+                        <div class="favorite-item">
+                            {% with first_image=favorite.product.products_photo.first %}
+                                {% if first_image %}
+                                    <img src="{{ first_image.photo.url }}" alt="{{ favorite.product.name }}" class="favorite-image">
+                                {% else %}
+                                    <img src="{% static 'images/default_product.png' %}" class="favorite-image" alt="No image available">
+                                {% endif %}
+                            {% endwith %}
+                            <div class="favorite-info">
+                                <h2 class="favorite-title">{{ favorite.product.name }}</h2>
+                                <p class="favorite-details">
+                                    Size: {{ favorite.product.size.name }} · Material: {{ favorite.product.material.name }}
+                                </p>
+                            </div>
+                            <div class="favorite-actions">
+                                <a href="{% url 'cart_add' favorite.product.id%}" class="favorite-btn add"><i class="bi bi-bag"></i> Add to Cart</a>
+                                <a href="{% url 'favorite_add_path' favorite.product.id %}" class="favorite-btn remove"><i class="bi bi-trash"></i></a>
+                            </div>
+                        </div>
+                    {% empty %}
+                        <p style="font-size: 22px">У вас пока нет избранных товаров.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
+    </main>
+{% endblock content %}

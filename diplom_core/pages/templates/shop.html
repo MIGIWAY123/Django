@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+    Feng Shui: Магазин
+{% endblock title %}
+
+{% block content %}
+    <main>
+        <section class="bestsellers shop">
+            <div class="container">
+                <h3 class="section-title">Shop</h3>
+                <div class="shop__wrapper">
+                    <button class="category-toggle" onclick="openOffcanvas()">Filter</button>
+
+                    <div id="offcanvas" class="offcanvas">
+                        <div class="offcanvas-header">
+                            <h5 class="offcanvas__header-title">Filter</h5>
+                            <button class="close-btn" onclick="closeOffcanvas()">✖</button>
+                        </div>
+                        <div class="offcanvas-body">
+                            <ul class="category-list">
+                                <li><a href="{% url 'shop_path' %}">All products</a></li>
+                                <li><a href="?discount_only=true">Products on sale</a></li>
+                                <li class="category-title">Size</li>
+                                {% for s in size %}
+                                    <li><a href="?size={{ s.slug }}">{{ s.name }}</a></li>
+                                {% endfor %}
+                                <li class="category-title">Material</li>
+                                {% for m in material %}
+                                    <li><a href="?material={{ m.slug }}">{{ m.name }}</a></li>
+                                {% endfor %}
+                                <li class="category-title">Cost</li>
+                                 <li><a href="{% url 'shop_path' %}?{{ request.GET.urlencode }}&sort=price_asc"
+                                   class="sort-btn {% if current_sort == 'price_asc' %}active{% endif %}">Ascending</a></li>
+                                 <li><a href="{% url 'shop_path' %}?{{ request.GET.urlencode }}&sort=price_desc"
+                                   class="sort-btn {% if current_sort == 'price_desc' %}active{% endif %}">Descending</a></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div id="offcanvas-backdrop" class="offcanvas-backdrop" onclick="closeOffcanvas()"></div>
+
+                    <div class="catalog">
+                        {% for product in products %}
+                            <div class="card">
+                                {% if product.discount_percentage > 0 %}
+                                    <div class="label">{{ product.discount_percentage }}%</div>
+                                {% endif %}
+                                <div class="icons">
+                                    <a href="{% url 'cart_add' product.id %}" class="icon__link"><i class="bi bi-bag"></i></a>
+                                    <a href="{% url 'favorite_add_path' product.id %}" class="icon__link"><i class="bi bi-heart"></i></a>
+                                </div>
+                                {% with first_image=product.products_photo.first %}
+                                    {% if first_image %}
+                                        <img src="{{ first_image.photo.url }}" class="card__image" alt="{{ product.name }}">
+                                    {% else %}
+                                        <img src="{% static 'images/default_product.png' %}" class="card__image" alt="No image available">
+                                    {% endif %}
+                                {% endwith %}
+                                <div class="info">
+                                    <h2 class="info__title">{{ product.name }}</h2>
+                                    {% if product.size %}
+                                        <p class="info__size">Size: {{ product.size.name }}</p>
+                                    {% endif %}
+                                    {% if product.material %}
+                                        <p class="info__material">Материал: {{ product.material.name }}</p>
+                                    {% endif %}
+                                    <p class="info__price">
+                                        {% if product.discount_percentage > 0 %}
+                                            <del>{{ product.current_price }} USD</del>
+                                            {{ product.discount_price }} USD
+                                        {% else %}
+                                            Цена: {{ product.current_price }} USD
+                                        {% endif %}
+                                    </p>
+                                    <a href="{% url 'detail_path' product_slug=product.slug %}" class="card__buy">Buy</a>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="pagination">
+            {% if products.has_previous %}
+                <a href="?page={{ products.previous_page_number }}" class="pagination__btn">← Prev</a>
+            {% endif %}
+
+            {% for num in products.paginator.page_range %}
+                <a href="?page={{ num }}" class="pagination__btn {% if products.number == num %}active{% endif %}">{{ num }}</a>
+            {% endfor %}
+
+            {% if products.has_next %}
+                <a href="?page={{ products.next_page_number }}" class="pagination__btn">Next →</a>
+            {% endif %}
+        </div>
+    </main>
+{% endblock content %}

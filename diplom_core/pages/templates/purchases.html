@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+    Feng Shui: Покупки
+{% endblock title %}
+
+{% block content %}
+    <main class="shop">
+        <div class="container">
+            <h2 class="section-title af1">My Purchases</h2>
+            <div class="shop__cards">
+                {% if user_orders %}
+                    {% for order in user_orders %}
+                        {% for item in order.items.all %}
+                            <div class="product">
+                                {% if item.product.get_first_photo_url %}
+                                    <img src="{{ item.product.get_first_photo_url }}" alt="{{ item.product.name }}" style="width: 100%; height: 230px;">
+                                {% else %}
+                                    <img src="{% static 'images/placeholder.png' %}" alt="Placeholder" style="width: 100%; height: 230px;">
+                                {% endif %}
+                                <div style="padding: 20px;">
+                                    <h3 style="font-size: 20px; margin-bottom: 10px;">{{ item.product.name }}</h3>
+                                    <p style="margin-bottom: 5px;">Purchased: {{ order.created_at|date:"F j, Y" }}</p>
+                                    <p style="margin-bottom: 10px;">Price: ${{ item.price }}</p>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% endfor %}
+                {% else %}
+                    <p style="font-size: 22px">У вас еще нет покупок.</p>
+                {% endif %}
+            </div>
+        </div>
+    </main>
+{% endblock content %}

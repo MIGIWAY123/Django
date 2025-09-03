@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+    Оплата
+{% endblock title %}
+
+{% block content %}
+    <main>
+        <section class="checkout shop">
+            <div class="container">
+                <h3 class="section-title-na">Checkout</h3>
+                <form class="form-wrapper" method="post">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <button type="submit">Place order</button>
+                </form>
+            </div>
+        </section>
+    </main>
+{% endblock content %}

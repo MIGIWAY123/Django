@@ -1,0 +1,36 @@
+.form-wrapper {
+    max-width: 600px;
+    margin: 100px auto;
+    padding: 40px;
+    border: 1px solid #242424;
+    background-color: #f9f8f4;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  .form-wrapper h2 {
+    font-size: 32px;
+    text-transform: uppercase;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .form-wrapper input,
+  .form-wrapper textarea {
+    padding: 16px;
+    font-size: 16px;
+    border: 1px solid #242424;
+    background-color: #fff;
+  }
+  
+  .form-wrapper button {
+    padding: 16px;
+    font-size: 18px;
+    background-color: #242424;
+    color: #f9f8f4;
+    border: none;
+    cursor: pointer;
+    text-transform: uppercase;
+  }
+  

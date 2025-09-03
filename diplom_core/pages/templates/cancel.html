@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+    Оплата не удалась
+{% endblock title %}
+
+{% block content %}
+    <section class="checkout shop" style="text-align: center; padding: 50px 0;">
+        <div class="container">
+            <h3 class="section-title-na" style="color: #ff0000;">Оплата не удалась!</h3>
+            <p class="section-desc">
+                К сожалению, при обработке вашего платежа произошла ошибка.
+            </p>
+            <p class="section-sub-desc">
+                Пожалуйста, попробуйте оформить заказ снова или свяжитесь с нами.
+            </p>
+            <div style="margin-top: 30px;">
+                <a href="{% url 'cart_detail_path' %}" class="btn btn-secondary">Вернуться в корзину</a>
+                <a href="{% url 'index_path' %}" class="btn btn-primary">Вернуться на главную</a>
+            </div>
+        </div>
+    </section>
+{% endblock content %}

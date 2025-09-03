@@ -1,0 +1,117 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}Feng Shui{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'style/reset.css' %}" />
+    <link rel="stylesheet" href="{% static 'style/style.css' %}" />
+    <link rel="stylesheet" href="{% static 'style/form.css' %}" />
+    <link rel="stylesheet" href="{% static 'style/fonts.css' %}" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+</head>
+
+<body>
+    <div id="messages-container">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+    <header class="header">
+        <a href="{% url 'index_path' %}" class="logo">Feng Shui</a>
+        <nav class="header__menu">
+            <ul class="header__ment_list">
+                <li class="header__list_item"><a href="{% url 'index_path' %}" class="header__list_link">Home</a></li>
+                <li class="header__list_item"><a href="{% url 'shop_path' %}" class="header__list_link">Shop</a></li>
+                <li class="header__list_item"><a href="{% url 'about_path' %}" class="header__list_link">About</a></li>
+                <li class="header__list_item"><a href="{% url 'contacts_path' %}" class="header__list_link">Contact</a></li>
+                {% if user.is_authenticated %}
+                <li class="header__list_item"><a href="{% url 'purchases_path' %}" class="header__list_link">Purchases</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+        <div class="header__active">
+            <ul class="header__active_list">
+                {% if user.is_authenticated %}
+                <li class="mean__active_item">
+                    <form action="{% url 'logout_path' %}" method="post" style="display: inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="header__active_link" style="background: none; border: none; padding: 0; cursor: pointer;">
+                            Sign out <i class="bi bi-person-fill-x"></i>
+                        </button>
+                    </form>
+                </li>
+                {% else %}
+                <li class="mean__active_item"><a href="{% url 'login_path' %}" class="header__active_link">
+                    Sign in <i class="bi bi-person-fill-down"></i>
+                </a></li>
+                <li class="mean__active_item"><a href="{% url 'register_path' %}" class="header__active_link">
+                    Sign up <i class="bi bi-person-add"></i>
+                </a></li>
+                {% endif %}
+                <li class="mean__active_item"><a href="{% url 'cart_detail_path' %}" class="header__active_link">
+                        <i class="bi bi-bag"></i></a>
+                </li>
+                <li class="mean__active_item"><a href="{% url 'favorite_path' %}" class="header__active_link">
+                        <i class="bi bi-heart"></i></a>
+                </li>
+            </ul>
+        </div>
+    </header>
+
+    <main>
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <footer class="footer">
+        <a href="{% url 'index_path' %}" class="logo">Feng Shui</a>
+        <nav class="footer__menu">
+            <ul class="footer__ment_list">
+                <li class="footer__list_item"><a href="{% url 'index_path' %}" class="footer__list_link">Home</a></li>
+                <li class="footer__list_item"><a href="{% url 'shop_path' %}" class="footer__list_link">Shop</a></li>
+                <li class="footer__list_item"><a href="{% url 'about_path' %}" class="footer__list_link">About</a></li>
+                <li class="footer__list_item"><a href="{% url 'contacts_path' %}" class="footer__list_link">Contact</a></li>
+                {% if user.is_authenticated %}
+                <li class="header__list_item"><a href="{% url 'purchases_path' %}" class="header__list_link">Purchases</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+        <div class="footer__active">
+            <ul class="footer__active_list">
+                <li class="mean__active_item"><a href="{% url 'cart_detail_path' %}" class="footer__active_link">
+                        <i class="bi bi-bag"></i></a>
+                </li>
+                <li class="mean__active_item"><a href="{% url 'favorite_path' %}" class="footer__active_link">
+                        <i class="bi bi-heart"></i></a>
+                </li>
+            </ul>
+        </div>
+    </footer>
+
+    <script src="{% static 'js/script.js' %}"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const messages = document.querySelectorAll('.alert');
+            messages.forEach(message => {
+                setTimeout(() => {
+                    message.style.opacity = 1;
+                }, 100);
+                setTimeout(() => {
+                    message.style.opacity = 0;
+                    setTimeout(() => {
+                        message.remove();
+                    }, 500);
+                }, 3000);
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+    Feng Shui: Корзина
+{% endblock title %}
+
+{% block content %}
+<main>
+    <section class="cart shop">
+        <div class="container">
+            <h3 class="section-title-na">Your Cart</h3>
+            {% if cart and cart.items.all %}
+                <table class="cart-table">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Details</th>
+                            <th>Price</th>
+                            <th>Remove</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in cart.items.all %}
+                            <tr>
+                                <td>
+                                    {# Здесь мы используем метод get_first_photo_url из модели Product #}
+                                    <img src="{{ item.product.get_first_photo_url }}" alt="{{ item.product.name }}" class="cart-image">
+                                </td>
+                                <td>
+                                    <strong><a href="{% url 'detail_path' item.product.slug %}">{{ item.product.name }}</a></strong><br>
+                                    {% if item.product.size %}Size: {{ item.product.size.name }}<br>{% endif %}
+                                    {% if item.product.material %}Material: {{ item.product.material.name }}{% endif %}
+                                </td>
+                                <td>${{ item.get_total_price }}</td>
+                                <td>
+                                    <form action="{% url 'cart_remove' item.product.id %}" method="post" style="display: inline;">
+                                        {% csrf_token %}
+                                        <button type="submit" class="icon__link" style="border:none; background:none; cursor:pointer;">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <div class="cart-total">
+                    <p>Total: <strong>${{ total_price }}</strong></p>
+                    <a href="{% url 'checkout_path' %}" class="card__buy">Checkout</a>
+                </div>
+            {% else %}
+                <div style="text-align: center; padding: 50px 0;">
+                    <p>Your cart is empty.</p>
+                    <a href="{% url 'shop_path' %}" class="card__buy">Go to Shop</a>
+                </div>
+            {% endif %}
+        </div>
+    </section>
+</main>
+{% endblock content %}

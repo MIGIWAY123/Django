@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+    Feng Shui: Главная страница
+{% endblock title %}
+
+{% block content %}
+    <div class="header__banner">
+        <img src="{% static 'images/header-image.jpg' %}" alt="" class="header__image">
+        <div class="banner__text">
+            <h1 class="banner__text-main">Harmony through Every Element</h1>
+            <p class="banner__text-desc">
+                Natural energy, tranquility, and harmony — this is what we offer through our clay pots. Inspired by the
+                teachings of Feng Shui, we have created a collection of items that help fill your home with positive
+                energy and create a space for prosperity.
+            </p>
+        </div>
+    </div>
+    <section class="shop">
+        <div class="container">
+            <h3 class="section-title">SHOP</h3>
+            <p class="section-desc">Clay Pot Collection: Nature and Feng Shui in Every Detail</p>
+            <p class="section-sub-desc">
+                We offer a wide selection of clay pots, crafted with attention to every detail. All of our products
+                reflect the philosophy of Feng Shui, helping you create a harmonious space. The soft shades of gray
+                and
+                beige perfectly complement any interior, while the variety of shapes allows you to choose the pot
+                that
+                will become part of your unique energy.
+            </p>
+
+            <div class="shop__cards">
+                {% for product in shop_products %}
+                    <div class="product">
+                        {% if product.discount_percentage > 0 %}
+                            <div class="discount">{{ product.discount_percentage }}%</div>
+                        {% endif %}
+                        <img src="{{ product.products_photo.first.photo.url }}" alt="">
+                        <div class="info">
+                            <h2 class="info__title">{{ product.name }}</h2>
+                            <p class="info__size">Размер: {{ product.size.name }}</p>
+                            <p class="info__material">Материал: {{ product.material.name }}</p>
+                            <p class="info__price">
+                                {% if product.discount_percentage > 0 %}
+                                    <del>{{ product.current_price }} USD</del>
+                                    {{ product.discount_price }} USD
+                                {% else %}
+                                    Цена: {{ product.current_price }} USD
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <section class="bestsellers">
+        <div class="container">
+            <h3 class="section-title af1">Bestsellers</h3>
+            <p class="section-desc">Discover the most popular clay pots that attract the attention of our customers.
+            </p>
+            <p class="section-sub-desc">
+                These products perfectly combine Feng Shui aesthetics, quality, and style.
+            </p>
+
+            <div class="catalog">
+                {% for bestseller in bestsellers %}
+                    <div class="card">
+                        {% if bestseller.discount_percentage > 0 %}
+                            <div class="label">{{ bestseller.discount_percentage }}%</div>
+                        {% endif %}
+                        <div class="icons">
+                            <a href="{% url 'cart_add' bestseller.id %}" class="icon__link"><i class="bi bi-bag"></i></a>
+                            <a href="{% url 'favorite_add_path' bestseller.id %}" class="icon__link"><i class="bi bi-heart"></i></a>
+                        </div>
+                        <img src="{{ bestseller.products_photo.first.photo.url }}" class="card__image" alt="">
+                        <div class="info">
+                            <h2 class="info__title">{{ bestseller.name }}</h2>
+                            <p class="info__size">Размер: {{ bestseller.size.name }}</p>
+                            <p class="info__material">Материал: {{ bestseller.material.name }}</p>
+                            <p class="info__price">
+                                {% if bestseller.discount_percentage > 0 %}
+                                    <del>{{ bestseller.current_price }} USD</del>
+                                    {{ bestseller.discount_price }} USD
+                                {% else %}
+                                    Цена: {{ bestseller.current_price }} USD
+                                {% endif %}
+                            </p>
+                            <a href="{% url 'detail_path' product_slug=bestseller.slug %}" class="card__buy">Buy</a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <section class="about">
+        <div class="container">
+            <h3 class="section-title af2">About us</h3>
+            <p class="section-desc">Welcome to our store, where tradition and modern style meet in every pot.</p>
+            <p class="section-sub-desc">
+                We are a team inspired by the philosophy of Feng Shui, creating unique clay pots that help fill your
+                home with harmony and tranquility. Each of our products is crafted with special attention to detail
+                and
+                made from high-quality materials, allowing us to offer you items that are not only beautiful but
+                also
+                beneficial for your home.
+            </p>
+
+            <div class="about__img">
+                <img src="{% static 'images/about-img.png' %}" alt="" class="about__img-settings">
+            </div>
+    </section>
+{% endblock content %}

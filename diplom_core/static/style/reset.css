@@ -1,0 +1,51 @@
+/* Убираем отступы и поля */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  /* Наследуем шрифты и убираем границы и фон */
+  body, html {
+    height: 100%;
+    font-family: sans-serif;
+    background: none;
+    color: inherit;
+  }
+  
+  /* Убираем стили у заголовков и абзацев */
+  h1, h2, h3, h4, h5, h6, p {
+    font-size: 100%;
+    font-weight: normal;
+  }
+  
+  /* Обнуляем списки */
+  ul, ol {
+    list-style: none;
+  }
+  
+  /* Обнуляем ссылки */
+  a {
+    text-decoration: none;
+    color: inherit;
+  }
+  
+  /* Убираем рамки и стили у форм */
+  button, input, textarea, select {
+    font: inherit;
+    border: none;
+    background: none;
+    outline: none;
+  }
+  
+  /* Убираем выделение для кнопок */
+  button {
+    cursor: pointer;
+  }
+  
+  /* Изображения — адаптивные */
+  img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+  }

@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+    Feng Shui: Вход
+{% endblock title %}
+
+{% block content %}
+    <main>
+        <div class="container">
+            <form  method="post" action="{% url 'login_path' %}" class="form-wrapper">
+                <h2>Login</h2>
+                {% csrf_token %}
+                {{ form.username }}
+                {{ form.password }}
+                <button type="submit">Log In</button>
+            </form>
+        </div>
+    </main>
+{% endblock content %}

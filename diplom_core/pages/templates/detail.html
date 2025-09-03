@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}
+    {{ product.name }}
+{% endblock title %}
+
+{% block content %}
+<main>
+    <section class="product-detail">
+        <div class="container">
+            <div class="product-detail__wrapper">
+                <div class="product-detail__image-block">
+                    {% if product.products_photo.first %}
+                        <img src="{{ product.products_photo.first.photo.url }}" alt="{{ product.name }}" class="product-detail__image">
+                    {% else %}
+                        <img src="{% static 'images/placeholder.png' %}" alt="Placeholder" class="product-detail__image">
+                    {% endif %}
+                </div>
+                <div class="product-detail__info">
+                    <h1 class="product-detail__title">{{ product.name }}</h1>
+                    <p class="product-detail__price">
+                        {% if product.discount_percentage > 0 %}
+                            <del>${{ product.current_price }} USD</del>
+                            ${{ product.discount_price }} USD
+                        {% else %}
+                            Цена: ${{ product.current_price }} USD
+                        {% endif %}
+                    </p>
+                    <p class="product-detail__desc">
+                        {{ product.description }}
+                    </p>
+
+                    <p class="product-detail__meta">Размер: {{ product.size.name }}</p>
+                    <p class="product-detail__meta">Материал: {{ product.material.name }}</p>
+
+                    <div class="product-detail__buttons">
+                        <a href="{% url 'cart_add' product.id %}" class="product-btn add-cart"><i class="bi bi-bag" style="color: white"></i> Добавить в корзину</a>
+                        <a href="{% url 'favorite_add_path' product.id %}" class="product-btn favorite"><i class="bi bi-heart"></i></a>
+                    </div>
+                    {% if user.is_authenticated %}
+                        <form action="{% url 'save_comment_active' product_pk=product.pk %}" method="post" class="comment-form">
+                            {% csrf_token %}
+                            <h4 class="form-title">Leave a Comment</h4>
+                            {{ form|crispy }}
+                            <button type="submit" class="btn btn-primary">Post Comment</button>
+                        </form>
+                    {% else %}
+                            <p style="font-size: 20px">Чтобы оставить комментарий, <a href="{% url 'login_path' %}" style="text-decoration: underline;">войдите</a>
+                                или <a href="{% url 'register_path' %}" style="text-decoration: underline;">зарегистрируйтесь</a>.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="product-comments">
+        <div class="container">
+            <h3 class="section-title af2">Comments</h3>
+            <div class="comments-list">
+                {% for comment in comments %}
+                    <div class="comment-item">
+                        <p class="comment-meta">
+                            <strong>{{ comment.user.username }}</strong> · {{ comment.created_date }}
+                            {% if user.is_authenticated and user.is_superuser or user.is_authenticated and user == comment.user %}
+                                <a href="{% url 'delete_comment_active' comment.pk %}" class="comment-delete-btn">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            {% endif %}
+                        </p>
+                        <p class="comment-text">{{ comment.text }}</p>
+                    </div>
+                {% empty %}
+                    <p style="font-size: 20px">Комментариев пока нет.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+</main>
+{% endblock content %}
