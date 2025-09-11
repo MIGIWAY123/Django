@@ -282,7 +282,7 @@ def cart_detail(request):
     }
     return render(request, 'cart.html', context)
 
-stripe.api_key = settings.STRIPE_PUBLIC_KEY
+stripe.api_key = settings.STRIPE_SECRET_KEY
 
 def checkout_page(request):
     cart = None
