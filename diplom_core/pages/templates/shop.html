@@ -85,15 +85,15 @@
 
         <div class="pagination">
             {% if products.has_previous %}
-                <a href="?page={{ products.previous_page_number }}" class="pagination__btn">← Prev</a>
+                <a href="?{{ request.GET.urlencode }}&page={{ products.previous_page_number }}" class="pagination__btn">← Prev</a>
             {% endif %}
 
             {% for num in products.paginator.page_range %}
-                <a href="?page={{ num }}" class="pagination__btn {% if products.number == num %}active{% endif %}">{{ num }}</a>
+                <a href="?{{ request.GET.urlencode }}&page={{ num }}" class="pagination__btn {% if products.number == num %}active{% endif %}">{{ num }}</a>
             {% endfor %}
 
             {% if products.has_next %}
-                <a href="?page={{ products.next_page_number }}" class="pagination__btn">Next →</a>
+                <a href="?{{ request.GET.urlencode }}&page={{ products.next_page_number }}" class="pagination__btn">Next →</a>
             {% endif %}
         </div>
     </main>
