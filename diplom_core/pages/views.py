@@ -284,17 +284,11 @@ def cart_detail(request):
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
-def checkout_page(request):
-    cart = None
-    total_price = 0
-    form = CheckoutForm()
 
-    if request.user.is_authenticated:
-        try:
-            cart = Cart.objects.get(user=request.user)
-            total_price = sum(item.get_total_price() for item in cart.items.all())
-        except Cart.DoesNotExist:
-            pass
+def checkout_page(request):
+    cart = get_object_or_404(Cart, user=request.user)
+    total_price = sum(item.get_total_price() for item in cart.items.all())
+    form = CheckoutForm()
 
     if request.method == 'POST':
         form = CheckoutForm(request.POST)
@@ -308,116 +302,60 @@ def checkout_page(request):
                     phone_number=form.cleaned_data['phone_number'],
                 )
 
-                line_items = []
-                for item in cart.items.all():
-                    price = item.product.get_actual_price()
-                    OrderItem.objects.create(
-                        order=order,
-                        product=item.product,
-                        price=price,
-                        quantity=item.quantity
-                    )
-                    line_items.append({
-                        'price_data': {
-                            'currency': 'usd',
-                            'product_data': {
-                                'name': item.product.name,
-                            },
-                            'unit_amount': int(price * 100),
-                        },
-                        'quantity': item.quantity,
-                    })
+                line_items = [{
+                    'price_data': {
+                        'currency': 'usd',
+                        'product_data': {'name': item.product.name, },
+                        'unit_amount': int(item.get_total_price() * 100),
+                    },
+                    'quantity': item.quantity,
+                } for item in cart.items.all()]
 
-                try:
-                    checkout_session = stripe.checkout.Session.create(
-                        payment_method_types=['card'],
-                        line_items=line_items,
-                        mode='payment',
-                        success_url=request.build_absolute_uri(reverse_lazy('success_path')),
-                        cancel_url=request.build_absolute_uri(reverse_lazy('cancel_path')),
-                        metadata={'order_id': order.id}
-                    )
-                    return redirect(checkout_session.url, code=303)
-                except Exception as e:
-                    messages.error(request, f'Произошла ошибка при создании сессии Stripe: {e}')
-                    return redirect('checkout_path')
+                stripe_session = stripe.checkout.Session.create(
+                    payment_method_types=['card'],
+                    line_items=line_items,
+                    mode='payment',
+                    success_url=request.build_absolute_uri(reverse_lazy('success_path')),
+                    cancel_url=request.build_absolute_uri(reverse_lazy('cancel_path')),
+                    metadata={'order_id': order.id}
+                )
+                return redirect(stripe_session.url, code=303)
 
-    context = {
-        'cart': cart,
-        'total_price': total_price,
-        'form': form
-    }
+    context = {'cart': cart, 'total_price': total_price, 'form': form}
     return render(request, 'checkout.html', context)
 
 
 @csrf_exempt
 def stripe_webhook(request):
-    payload = request.body
-    sig_header = request.META['HTTP_STRIPE_SIGNATURE']
-    event = None
-
-    try:
-        event = stripe.Webhook.construct_event(
-            payload, sig_header, settings.STRIPE_WEBHOOK_SECRET
-        )
-    except ValueError as e:
-        return HttpResponse(status=400)
-    except stripe.error.SignatureVerificationError as e:
-        return HttpResponse(status=400)
-
-    if event['type'] == 'checkout.session.completed':
-        session = event['data']['object']
-        order_id = session.get('metadata', {}).get('order_id')
-        if order_id:
-            with transaction.atomic():
-                try:
-                    order = Order.objects.get(id=order_id)
-                    order.paid = True
-                    order.save()
-
-                    for item in order.items.all():
-                        item.product.purchases_count += item.quantity
-                        item.product.save()
-
-                    try:
-                        cart = Cart.objects.get(user=order.user)
-                        cart.items.all().delete()
-                        print(f"Корзина пользователя {order.user.username} успешно очищена.")
-                    except Cart.DoesNotExist:
-                        print(f"Корзина пользователя {order.user.username} не найдена.")
-
-                except Order.DoesNotExist:
-                    print(f"Заказ с ID {order_id} не найден.")
-
     return HttpResponse(status=200)
 
+
 def success_page(request):
-    if request.user.is_authenticated:
+    with transaction.atomic():
         try:
             order = Order.objects.filter(user=request.user, paid=False).order_by('-created_at').first()
-
             if order:
-                with transaction.atomic():
-                    order.paid = True
-                    order.save()
+                cart = Cart.objects.get(user=request.user)
+                cart_items = cart.items.all()
 
-                    for item in order.items.all():
-                        item.product.purchases_count += item.quantity
-                        item.product.save()
+                for cart_item in cart_items:
+                    OrderItem.objects.create(
+                        order=order,
+                        product=cart_item.product,
+                        price=cart_item.product.get_actual_price(),
+                        quantity=cart_item.quantity
+                    )
+                    cart_item.product.purchases_count += cart_item.quantity
+                    cart_item.product.save()
 
-                    try:
-                        cart = Cart.objects.get(user=request.user)
-                        cart.items.all().delete()
-                        print(f"Корзина пользователя {request.user.username} успешно очищена.")
-                    except Cart.DoesNotExist:
-                        print(f"Корзина пользователя {request.user.username} не найдена.")
+                order.paid = True
+                order.save()
 
-                    print(f"Заказ {order.id} успешно обработан на success_page.")
-            else:
-                print("Неоплаченный заказ не найден для текущего пользователя.")
+                cart_items.delete()
 
-        except Exception as e:
-            print(f"Произошла ошибка при обработке успешной оплаты: {e}")
+                messages.success(request, 'Ваш заказ успешно оплачен!')
+        except (Order.DoesNotExist, Cart.DoesNotExist) as e:
+            messages.error(request, f'Произошла ошибка при обработке заказа: {e}')
 
     return render(request, 'success.html')
 
